@@ -562,11 +562,7 @@ src="https://www.facebook.com/tr?id=702642555652313&ev=PageView&noscript=1"
 				<br>
 
 
-				<form id="order_form" class="order_form" action="https://www.salesanythings.store/order.php" method="POST" name="order-form">
-					<!--<br>-->
-					
-
-
+				<form id="order_form" class="order_form" method="POST" name="order-form">
 					<input class="field" type="text" name="name" placeholder="Ваше ім&#39;я" required="">
 					<input class="field" type="tel" name="phone" minlength="10" maxlength="15" placeholder="Ваш телефон" required="">
 
@@ -663,11 +659,52 @@ src="https://www.facebook.com/tr?id=702642555652313&ev=PageView&noscript=1"
 				});
 			</script>
 			<script>
-				$(".order_form").submit(function () {
-					$(this).children(".button").hide();
-					$('.img-loading').css('display', 'block');
-				});
-			</script>
+  document.getElementById('order_form').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    // Дані бота
+    const token = '7702858497:AAHkYy0UzzjIuTpeHyEycr_zKHGb2qqu3I0'; // Заміни на свій токен
+    const chatId = '326093985'; // Заміни на свій chat_id
+
+    // Витягування даних форми
+    const name = this.name.value.trim();
+    const phone = this.phone.value.trim();
+
+    // Формуємо повідомлення
+    const message = `📥 Нова заявка:\n👤 Ім'я: ${name}\n📞 Телефон: ${phone}`;
+
+    // Показати анімацію завантаження (якщо потрібно)
+    const loadingImg = document.querySelector('.img-loading');
+    loadingImg.style.display = 'inline-block';
+
+    // Надсилання запиту в Telegram
+    fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: message
+      })
+    })
+      .then(response => response.json())
+      .then(data => {
+        loadingImg.style.display = 'none';
+        if (data.ok) {
+          alert('✅ Заявка надіслана!');
+          document.getElementById('order_form').reset();
+        } else {
+          alert('❌ Помилка при надсиланні. Спробуйте ще раз.');
+        }
+      })
+      .catch(error => {
+        loadingImg.style.display = 'none';
+        alert('⚠️ Сталася помилка: ' + error.message);
+      });
+  });
+</script>
+
 						<script>
 				$('select[name="comment"]').on('change', function () {
 					var count = $(this).find('option:selected').data('count');
